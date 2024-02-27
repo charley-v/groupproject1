@@ -1,5 +1,55 @@
 import time
+import random
+import ctypes
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import tkinter as tk
+import numpy as np
+
+ctypes.windll.shcore.SetProcessDpiAwareness(1)
+
+def gen_rand_arr():
+    try:
+        # Get user input 
+        user_input = int(entry.get())
+        # Generate a random array with user input length
+        random_array = [random.randint(1, 100) for x in range(user_input)]
+
+       # Display the random array in the result entry widget
+        result_box.delete(0, tk.END)
+        #turn it into a string so user can add more to the array if they want
+        result_box.insert(0, str(random_array)) 
+        
+        for i in range(0, len(random_array)):
+            random_array[i] = int(random_array)
+        
+    except ValueError:
+        # Handle the case where the user input is not a valid integer
+        result_box.delete(0, tk.END)
+        result_box.insert(0, "Invalid input. Please enter a valid integer.")
+
+    
+root = tk.Tk()
+#root.geometry("800x500")
+#scale lettering with size of frame
+root.tk.call('tk', 'scaling', 2.0)
+titleLabel = tk.Label(root, text = "Algorithm Comparisons")
+#titleLabel.pack(padx = 5, pady = 5)
+
+# User input box
+entry = tk.Entry(root, width=10)
+entry.grid(row=0, column=0, padx=10, pady=10)
+
+# generate array button
+array_button = tk.Button(root, text="Generate Array", command=gen_rand_arr)
+array_button.grid(row=0, column=1, padx=5, pady=5)
+
+
+# Show resulting generated array. Can be edited by user
+result_box = tk.Entry(root, width=60)
+result_box.grid(row=0, column=2, padx=10, pady=10)
+
+root.mainloop()
 
 def bubble_sort(arr):
     n = len(arr)
@@ -77,7 +127,7 @@ def main():
     plt.ylabel("Runtime(ms)", fontweight = "bold", fontsize = 15)
     plt.title("Sorting Algorithms")
 
-    plt.show()
+    #plt.show()
 
 main()
 
