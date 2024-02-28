@@ -1,7 +1,11 @@
 import time
+import ast
+import random
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import messagebox as m_box
+import numpy as np
 
 #algorithms
 def bubble_sort(arr):
@@ -48,78 +52,115 @@ def mergeSort(arr):
             j += 1
             k += 1
 
-def graph(arr):
     
-    #list of different sorts
-    sorts = {'Bubble Sort': bubble_sort, 
-             'Merge Sort' : mergeSort, 
-             'Quick Sort' : quick_sort}
-    
-    #array for times
-    rtimes = []
-    #measures execution time for each sort
-    for sort in sorts.values():
-        start_time = time.time()
-        sort(arr)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        rtimes.append((elapsed_time * 1000)/1000)
-
-
-    #graph
-    algo = list(sorts.keys())
-    rtime = rtimes
-    fig = plt.figure(figsize = (10,5))
-    plt.bar(algo, rtime, color ='red', width = 0.3)
-
-    plt.xlabel("Algorithms", fontweight = "bold", fontsize = 15)
-    plt.ylabel("Runtime(ms)", fontweight = "bold", fontsize = 15)
-    plt.title("Sorting Algorithms")
-    def addlabels(x,y):
-        for i in range(len(x)):
-            plt.text(i, y[i], y[i], ha = 'center')
-    
-    addlabels(algo,rtime)
-
-    plt.show()
-
-def gui():
+def graph():
+    #create instance of tkinter
     root = tk.Tk()
+    
+    #title of the window
     root.title("Sorting Algorithms")
-    root.geometry('600x400')
+    
+    #title and input dialog box for elements
+    index_label = tk.Label(root, text="Enter the number of\n elements in the array")
+    index_label.grid(row=2, column=0, sticky = "W")  
+    user_index = tk.Entry(root, width = 10)
+    user_index.grid(row=2, column=0, padx = 150, sticky= "W")  
+    
+    #title and input dialog box for array
+    label = tk.Label(root, text="Array")
+    label.grid(row=2, column=0, padx = 250, sticky = "W")    
+    array_text = tk.Entry(root, width= 70)
+    array_text.grid(row=2, column=0, padx = 300,sticky= "W")
 
-    lbl = tk.Label(root, text = "Enter an Array", justify='center')
-    txt = tk.Entry(root, justify='center')
-    lbl.pack()
-    txt.pack()
-
+        
     #clear button
     def clear_txt():
-        txt.delete(0,'end')
+        array_text.delete(0,'end')
+        user_index.delete(0,'end')
 
-    #submit button
-    def clicked():
+    #generate button
+    def generate():
         try:
-            n = txt.get()
-            arr = [int(item) for item in n.split()]
-            graph(arr)
+            # Get user input 
+            user_input = int(user_index.get())
+            # Generate a random array with user input length
+            random_array = [random.randint(1, 100) for x in range(user_input)]
+
+        # Display the random array in the result entry widget
+            array_text.delete(0, tk.END)
+            #turn it into a string so user can add more to the array if they want
+            array_text.insert(0, str(random_array)) 
+          
         except ValueError:
-            m_box.showerror('Error', 'Only digits seperated by space, Try again')
-            graph(arr)
+            # Handle the case where the user input is not a valid integer
+            array_text.delete(0, tk.END)
+            array_text.insert(0, "Invalid input. Please enter a valid integer.")
     
-    btn1 = tk.Button(root, text = "Submit", bg = 'white',command =clicked,justify='center')
+    #graph button
+    def run():
+        gen_array = array_text.get()
+        new_arr = ast.literal_eval(gen_array)
+        new_arr = [int(element) for element in new_arr]
+        
+        #list of different sorts
+        sorts = {'Bubble Sort': bubble_sort, 
+                'Merge Sort' : mergeSort, 
+                'Quick Sort' : quick_sort}
+        
+        #array for times
+        run_times = []
+        #measures execution time for each sort
+        for sort in sorts.values():
+            start_time = time.time()
+            sort(new_arr)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            run_times.append((elapsed_time * 1000)/1000)
+        for i in range(len(run_times)):
+            print(run_times[i])
+        
+        #create bar graph
+        fig = plt.figure(figsize=(6,6), dpi = 100)
+        labels = ("Bubble Sort", "Merge Sort", "Quick Sort")
+        #arrange labels equidistant from each other
+        label_position = np.arange(len(labels))
+        times = [run_times[0], run_times[1], run_times[2]]
+        
+        #what information goes in each bar 
+        plt.bar(label_position, times, align='center', alpha=1.0)
+        plt.xticks(label_position, labels)
+        plt.ylabel('Time (ms)')
+        plt.xlabel("Sorting Algorithm")
+        plt.tight_layout(pad = 2.2, w_pad = 0.5, h_pad = 0.1)
+        plt.title('Comparing Sorting Algorithms')
+        
+        #adds text to axes
+        for index, datapoints in enumerate(times):
+            plt.text(x = index, y = datapoints + 0.3, s = f"{datapoints}", fontdict = dict(fontsize = 10), ha='center', va = 'bottom')
+        
+        plt.show()
+        
+        #show the bar graph in tkinter window
+        canvas = FigureCanvasTkAgg(fig, master=root)
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=1, column=0, columnspan=3)  # Adjust columnspan as needed
+        
+    #generate array button
+    btn0 = tk.Button(root, text = "Generate", bg = 'white', command = generate).grid(row = 3, column = 0, padx = 150, sticky= "W")
+    #submit and run code button
+    btn1 = tk.Button(root, text = "Submit", bg = 'white', command = run, justify='center').grid(row = 3, column = 0)
+    #end program button
     btn2 = tk.Button(root, text = "Cancel", bg = 'white',command = root.destroy,
-                 justify='center', highlightcolor='red')
-    btn3 = tk.Button(root, text = "Clear",  bg = 'white', command=clear_txt, justify='center')
-    btn1.pack()
-    btn2.pack()
-    btn3.pack()
+                 justify='center', highlightcolor='red').grid(row = 4, column = 0)
+    #clear fields button
+    btn3 = tk.Button(root, text = "Clear",  bg = 'white', command=clear_txt, justify='center').grid(row = 5, column = 0)
+
+    frame = tk.Frame(root)    
+
     root.mainloop()
     
 def main():
-    gui()
+    graph()
 
 
 main()
-
-
