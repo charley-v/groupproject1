@@ -1,56 +1,9 @@
 import time
-import random
-import ctypes
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
-import numpy as np
+from tkinter import messagebox as m_box
 
-ctypes.windll.shcore.SetProcessDpiAwareness(1)
-
-def gen_rand_arr():
-    try:
-        # Get user input 
-        user_input = int(entry.get())
-        # Generate a random array with user input length
-        random_array = [random.randint(1, 100) for x in range(user_input)]
-
-       # Display the random array in the result entry widget
-        result_box.delete(0, tk.END)
-        #turn it into a string so user can add more to the array if they want
-        result_box.insert(0, str(random_array)) 
-        
-        for i in range(0, len(random_array)):
-            random_array[i] = int(random_array)
-        
-    except ValueError:
-        # Handle the case where the user input is not a valid integer
-        result_box.delete(0, tk.END)
-        result_box.insert(0, "Invalid input. Please enter a valid integer.")
-
-    
-root = tk.Tk()
-#root.geometry("800x500")
-#scale lettering with size of frame
-root.tk.call('tk', 'scaling', 2.0)
-titleLabel = tk.Label(root, text = "Algorithm Comparisons")
-#titleLabel.pack(padx = 5, pady = 5)
-
-# User input box
-entry = tk.Entry(root, width=10)
-entry.grid(row=0, column=0, padx=10, pady=10)
-
-# generate array button
-array_button = tk.Button(root, text="Generate Array", command=gen_rand_arr)
-array_button.grid(row=0, column=1, padx=5, pady=5)
-
-
-# Show resulting generated array. Can be edited by user
-result_box = tk.Entry(root, width=60)
-result_box.grid(row=0, column=2, padx=10, pady=10)
-
-root.mainloop()
-
+#algorithms
 def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
@@ -95,10 +48,7 @@ def mergeSort(arr):
             j += 1
             k += 1
 
-def main():
-
-    #random array, implenet user input/gui
-    arr = [10,2,3,4,1,3,32,34,12,23,11,22]
+def graph(arr):
     
     #list of different sorts
     sorts = {'Bubble Sort': bubble_sort, 
@@ -107,7 +57,6 @@ def main():
     
     #array for times
     rtimes = []
-
     #measures execution time for each sort
     for sort in sorts.values():
         start_time = time.time()
@@ -121,13 +70,55 @@ def main():
     algo = list(sorts.keys())
     rtime = rtimes
     fig = plt.figure(figsize = (10,5))
-    plt.bar(algo, rtime, color ='green', width = 0.3)
+    plt.bar(algo, rtime, color ='red', width = 0.3)
 
     plt.xlabel("Algorithms", fontweight = "bold", fontsize = 15)
     plt.ylabel("Runtime(ms)", fontweight = "bold", fontsize = 15)
     plt.title("Sorting Algorithms")
+    def addlabels(x,y):
+        for i in range(len(x)):
+            plt.text(i, y[i], y[i], ha = 'center')
+    
+    addlabels(algo,rtime)
 
-    #plt.show()
+    plt.show()
+
+def gui():
+    root = tk.Tk()
+    root.title("Sorting Algorithms")
+    root.geometry('600x400')
+
+    lbl = tk.Label(root, text = "Enter an Array", justify='center')
+    txt = tk.Entry(root, justify='center')
+    lbl.pack()
+    txt.pack()
+
+    #clear button
+    def clear_txt():
+        txt.delete(0,'end')
+
+    #submit button
+    def clicked():
+        try:
+            n = txt.get()
+            arr = [int(item) for item in n.split()]
+            graph(arr)
+        except ValueError:
+            m_box.showerror('Error', 'Only digits seperated by space, Try again')
+            graph(arr)
+    
+    btn1 = tk.Button(root, text = "Submit", bg = 'white',command =clicked,justify='center')
+    btn2 = tk.Button(root, text = "Cancel", bg = 'white',command = root.destroy,
+                 justify='center', highlightcolor='red')
+    btn3 = tk.Button(root, text = "Clear",  bg = 'white', command=clear_txt, justify='center')
+    btn1.pack()
+    btn2.pack()
+    btn3.pack()
+    root.mainloop()
+    
+def main():
+    gui()
+
 
 main()
 
