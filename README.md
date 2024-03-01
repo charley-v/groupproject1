@@ -16,10 +16,10 @@ packages:
 1. Matplotlib
   ([Matplotlib](https://matplotlib.org/stable/users/installing/index.html))
   run:
-    python -m pip install -U pip
-    python -m pip install -U matplotlib
+-     python -m pip install -U pip
+-     python -m pip install -U matplotlib
 
 2. Numpy
   [Numpy](https://numpy.org/install/)
   run:
-    pip install numpy
+-     pip install numpy
