@@ -77,10 +77,6 @@ def graph():
     def clear_txt():
         array_text.delete(0,'end')
         user_index.delete(0,'end')
-        fig = plt.figure(figsize=(6,6), dpi = 100)
-        canvas = FigureCanvasTkAgg(fig, master=root)
-        canvas.draw()
-        canvas.get_tk_widget().grid(row=1, column=0, columnspan=3)
 
     #generate button
     def generate():
@@ -141,6 +137,8 @@ def graph():
         #adds text to axes
         for index, datapoints in enumerate(times):
             plt.text(x = index, y = datapoints + 0.3, s = f"{datapoints}", fontdict = dict(fontsize = 10), ha='center', va = 'bottom')
+        
+        plt.show()
         
         #show the bar graph in tkinter window
         canvas = FigureCanvasTkAgg(fig, master=root)
