@@ -10,7 +10,7 @@ Libraries used:
 - numpy
 - random
 - ast
-- 
+  
 packages:
 
 1. Matplotlib
